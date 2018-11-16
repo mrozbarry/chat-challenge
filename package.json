@@ -9,7 +9,8 @@
   "dependencies": {
     "ink": "^0.5.1",
     "ink-spinner": "^2.0.0",
-    "ink-text-input": "^2.0.0"
+    "ink-text-input": "^2.0.0",
+    "udp-discovery": "^0.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",

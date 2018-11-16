@@ -1,5 +1,5 @@
 import { h, Component } from 'ink';
-import dgram from 'dgram';
+import { Discovery } from 'udp-discovery';
 
 export class Channels extends Component {
   constructor(props) {
@@ -10,46 +10,22 @@ export class Channels extends Component {
         type: 'channel',
         name: props.user,
         users: [props.user],
-      }]
+      }],
+      data: [],
     };
   }
 
   componentDidMount() {
-    this.createDgramServer();
-    this.interval = setInterval(() => {
-      this.pingServers();
-    }, 10000);
-    this.pingServers();
+    this.createDiscovery();
   }
 
-  createDgramServer() {
-    this.server = dgram.createSocket('udp4');
-    this.server.bind({ port: 42069, exclusive: false });
-    this.server.on('message', (message) => {
-      try {
-        const data = JSON.parse(message);
-        switch (data.type) {
-          case 'ping':
-            this.broadcastChannel();
-            break;
-
-          case 'channel':
-            this.registerChannel(data);
-            break;
-
-          default:
-            // What do?
-            break;
-
-        }
-      } catch (err) {
-        // What do?
-      }
+  createDiscovery() {
+    this.discovery = new Discovery();
+    const self = this.state.channels.find(c => c.name === this.props.user);
+    this.discovery.announce(this.props.user, { ...self, port: 0, ip: '0.0.0.0' }, 10000)
+    this.discovery.on('available', (name, data, reason) => {
+      this.registerChannel(data);
     });
-  }
-
-  pingServers() {
-    this.broadcastJson({ type: 'ping' });
   }
 
   registerChannel(channel) {
@@ -59,7 +35,6 @@ export class Channels extends Component {
   }
 
   broadcastChannel() {
-    const self = this.state.channels.find(c => c.name === this.props.user);
     if (self) {
       this.broadcastJson(self);
     }
@@ -73,7 +48,10 @@ export class Channels extends Component {
   render() {
     return (
       <div>
-        {this.state.channels.map(channel => <div key={channel.name}>{channel.name}</div>)}
+        Messages ({this.state.data.length}):
+        <div>
+          {this.state.data.map((d, index) => <div key={index}>{JSON.stringify(d)}</div>)}
+        </div>
       </div>
     )
   }
