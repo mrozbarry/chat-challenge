@@ -22,7 +22,7 @@ export class Channels extends Component {
   createDiscovery() {
     this.discovery = new Discovery();
     const self = this.state.channels.find(c => c.name === this.props.user);
-    this.discovery.announce(this.props.user, { ...self, port: 0, ip: '0.0.0.0' }, 10000)
+    this.discovery.announce(this.props.user, self, 10000)
     this.discovery.on('available', (name, data, reason) => {
       this.registerChannel(data);
     });
