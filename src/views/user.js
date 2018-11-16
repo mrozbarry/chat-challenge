@@ -15,9 +15,7 @@ export class User extends Component {
   render() {
     return (
       <div>
-        <div>
-          Enter a username:
-        </div>
+        Enter a username:
         <TextInput
           value={this.props.user}
           onChange={this.props.setUser}

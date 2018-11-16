@@ -16,6 +16,10 @@ export class Channels extends Component {
 
   componentDidMount() {
     this.createDgramServer();
+    this.interval = setInterval(() => {
+      this.pingServers();
+    }, 10000);
+    this.pingServers();
   }
 
   createDgramServer() {
@@ -63,7 +67,7 @@ export class Channels extends Component {
 
   broadcastJson(json) {
     const buffer = new Buffer(JSON.stringify(json));
-    this.server.send(buffer, buffer.length, 0, 42069, '192.168.0.255');
+    this.server.send(buffer, buffer.length, 0, 42069, '255.255.255.255');
   }
 
   render() {
